@@ -13,7 +13,7 @@ import (
 
 func main() {
 
-	logrus.Info("---开始调用kubernetes---")
+	logrus.Info("---restclient开始调用kubernetes---")
 	config, err := clientcmd.BuildConfigFromFlags("", "D:/kubeconfig/config")
 
 	if err != nil {
@@ -43,6 +43,6 @@ func main() {
 		logrus.Infof("Namespace {%s} Name: {%s}", d.Namespace, d.Name)
 	}
 
-	logrus.Info("---调用结束---")
+	logrus.Info("---restclient调用结束---")
 
 }
