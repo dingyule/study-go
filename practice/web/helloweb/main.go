@@ -1,18 +1,34 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 )
 
-//创建处理器函数
-func handler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "hello world !", r.URL.Path)
+type Result struct {
+	Total    int    `json:"total"`
+	Message  string `json:"message"`
+	Code     int    `json:"code"`
+	UserInfo `json:"data"`
+}
+
+type UserInfo struct {
+	Name     string `json:"name"`
+	Password string `json:"password"`
 }
 
 func main() {
-	http.HandleFunc("/", handler)
-	//创建路由
-	http.ListenAndServe(":8080", nil)
+	url := "http://localhost:8888/getUser"
+	res, _ := http.Get(url)
+	if res.StatusCode == http.StatusOK {
+		body, _ := ioutil.ReadAll(res.Body)
+		res.Body.Close()
+		var result Result
+		json.Unmarshal([]byte(body), &result)
+		fmt.Println("json:", json.Unmarshal([]byte(body), &result))
+		fmt.Printf("打印Result: %v\n", result)
+	}
 
 }
