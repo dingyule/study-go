@@ -2,33 +2,42 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
-	"io/ioutil"
 	"net/http"
 )
 
 type Result struct {
-	Total    int    `json:"total"`
-	Message  string `json:"message"`
-	Code     int    `json:"code"`
-	UserInfo `json:"data"`
+	Total         int    `json:"total"`
+	Message       string `json:"msg"`
+	Code          int    `json:"code"`
+	GauthUserInfo `json:"data"`
 }
 
-type UserInfo struct {
-	Name     string `json:"name"`
+type GauthUserInfo struct {
+	Username string `json:"loginName"`
 	Password string `json:"password"`
 }
 
-func main() {
-	url := "http://localhost:8888/getUser"
-	res, _ := http.Get(url)
-	if res.StatusCode == http.StatusOK {
-		body, _ := ioutil.ReadAll(res.Body)
-		res.Body.Close()
-		var result Result
-		json.Unmarshal([]byte(body), &result)
-		fmt.Println("json:", json.Unmarshal([]byte(body), &result))
-		fmt.Printf("打印Result: %v\n", result)
+func jsonExample(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-type", "application/json")
+	result := &Result{
+		Total:   1,
+		Message: "操作成功",
+		Code:    200,
+		GauthUserInfo: GauthUserInfo{
+			Username: "test",
+			Password: "123456",
+		},
 	}
+	json, _ := json.Marshal(result)
+	w.Write(json)
+}
+
+func main() {
+
+	server := http.Server{
+		Addr: "localhost:8888",
+	}
+	http.HandleFunc("/common/getUserBykey", jsonExample)
+	server.ListenAndServe()
 
 }
